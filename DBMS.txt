@@ -1,0 +1,311 @@
+************ Practical 2 *********************
+create table pr1(name varchar(20),rollno int,marks int);
+
+insert into pr1 values('Vinay',1,70),('Vijay',2,80);
+insert into pr1 values('Ishu',3,71),('Tejas',4,84);
+insert into pr1 values('Anu',5,79),('Rohan',6,85);
+
+create table pr2(roll int,dept varchar(20),year varchar(20));
+insert into pr2 values(1,'Computer','TE'),(2,'Mech','TE');
+insert into pr2 values(3,'Computer','TE'),(4,'IT','TE');
+insert into pr2 values(5,'IT','TE');
+
+create view vp1 as select rollno,name from pr1;
+
+create table backup as select * from pr1 where rollno<3;
+
+alter table pr1 modify rollno int auto_increment;
+
+create index p1 on pr1(rollno);
+show index from pr1;
+
+for renaming
+alter table pr2 change rollno roll int(11);
+
+PL/SQl
+create synonym pr for pr1;
+Use to access table from another name
+
+***************************************Practical 3*****************************
+PL/SQL
+create table student(roll int,name varchar(20),marks int);
+insert into student values(1,'vijay',88);
+insert into student values(2,'tejas',50);
+insert into student values(3,'rohan',78);
+insert into student values(4,'vinay',62);
+
+create table student1(roll int,name varchar(20),marks int);
+insert into student1 values(1,'vijay',88);
+insert into student1 values(2,'tejas',50);
+insert into student1 values(3,'rohan',78);
+insert into student1 values(4,'vinay',62);
+insert into student1 values(5,'Ishu',90);
+
+delete from student where name='tejas';
+select * from student where roll=2;
+select * from student intersect select * from student1;
+select * from student union select * from student1;
+select * from student1 minus select * from student;
+update student set marks=76 where roll=3;
+
+***************************************Practical 4*************************************
+select * from pr1;
++-------+--------+-------+
+| name  | rollno | marks |
++-------+--------+-------+
+| Vinay |      1 |    70 |
+| Vijay |      2 |    80 |
+| Ishu  |      3 |    71 |
+| Tejas |      4 |    84 |
+| Anu   |      5 |    79 |
+| Rohan |      6 |    85 |
+| purva |      7 |    84 |
++-------+--------+-------+
+7 rows in set (0.00 sec)
+
+select * from pr2;
++------+----------+------+
+| roll | dept     | year |
++------+----------+------+
+|    1 | Computer | TE   |
+|    2 | Mech     | TE   |
+|    3 | Computer | TE   |
+|    4 | IT       | TE   |
+|    5 | IT       | TE   |
++------+----------+------+
+5 rows in set (0.00 sec)
+
+select rollno,name,marks,pr2.dept,pr2.year from pr1 inner join pr2 on pr1.rollno=pr2.roll;
++--------+-------+-------+----------+------+
+| rollno | name  | marks | dept     | year |
++--------+-------+-------+----------+------+
+|      1 | Vinay |    70 | Computer | TE   |
+|      2 | Vijay |    80 | Mech     | TE   |
+|      3 | Ishu  |    71 | Computer | TE   |
+|      4 | Tejas |    84 | IT       | TE   |
+|      5 | Anu   |    79 | IT       | TE   |
++--------+-------+-------+----------+------+
+5 rows in set (0.00 sec)
+
+select rollno,name,marks,pr2.dept,pr2.year from pr1 right join pr2 on pr1.rollno=pr2.roll;
++--------+-------+-------+----------+------+
+| rollno | name  | marks | dept     | year |
++--------+-------+-------+----------+------+
+|      1 | Vinay |    70 | Computer | TE   |
+|      2 | Vijay |    80 | Mech     | TE   |
+|      3 | Ishu  |    71 | Computer | TE   |
+|      4 | Tejas |    84 | IT       | TE   |
+|      5 | Anu   |    79 | IT       | TE   |
++--------+-------+-------+----------+------+
+5 rows in set (0.00 sec)
+
+select rollno,name,marks,pr2.dept,pr2.year from pr1 left join pr2 on pr1.rollno=pr2.roll;
++--------+-------+-------+----------+------+
+| rollno | name  | marks | dept     | year |
++--------+-------+-------+----------+------+
+|      1 | Vinay |    70 | Computer | TE   |
+|      2 | Vijay |    80 | Mech     | TE   |
+|      3 | Ishu  |    71 | Computer | TE   |
+|      4 | Tejas |    84 | IT       | TE   |
+|      5 | Anu   |    79 | IT       | TE   |
+|      6 | Rohan |    85 | NULL     | NULL |
+|      7 | purva |    84 | NULL     | NULL |
++--------+-------+-------+----------+------+
+7 rows in set (0.00 sec)
+
+select a.name,b.dept from pr1 a,pr2 b where a.rollno=b.roll;
++-------+----------+
+| name  | dept     |
++-------+----------+
+| Vinay | Computer |
+| Vijay | Mech     |
+| Ishu  | Computer |
+| Tejas | IT       |
+| Anu   | IT       |
++-------+----------+
+5 rows in set (0.00 sec)
+
+************************************************Practical 5*************************************************
+create table borrower(roll int,name varchar(10),doi date,nob varchar(20),status varchar(2));
+ 
+ insert into borrower values(1,'Vijay','06-06-2019','WOF','I');
+ insert into borrower values(2,'Pratik','01-06-2019','GOT','I');
+ insert into borrower values(3,'Kalpesh','30-06-2019','WOF','I');
+ insert into borrower values(4,'Vinay','02-07-2019','GOT','I');
+ insert into borrower values(5,'Ishu','18-10-2019','GOT','I');
+ insert into borrower values(6,'Purva','1-10-2019','WOF','I');
+ insert into borrower values(7,'Annu','19-09-2019','GOT','I');
+ 
+ create table f(Rollno int,DOR date,fine int);
+ 
+ create or replace procedure book(r integer) as
+ fi integer:=0;
+ begin 
+ select to_number(trunc(sysdate-doi)) into fi from borrower where roll=r;
+ if fi>=15 and fi<=30 then
+ fi:=fi-15;
+ insert into f values(r,sysdate,'');
+ update f set fine=fi*5 where rollno=r;
+ elsif fi>30 then
+ fi:=fi-30;
+ insert into f values(r,sysdate,'');
+ update f set fine=(fi*50)+75 where rollno=r;
+ end if;
+ update borrower set status='R' where roll=r;
+ Exception
+ when no_data_found then
+ dbms_output.put_line('No such rollno found');
+ end;
+ /
+ 
+***************************************************Practical 6**********************************************************
+Cursor
+Union
+declare
+roll integer;
+name varchar2(20);
+cursor mycursor is select roll,name from student union select roll,name from student1;
+begin
+open mycursor;
+loop
+fetch mycursor into roll,name;
+exit when mycursor%notfound;
+dbms_output.put_line(roll ||' '||name);
+end loop;
+close mycursor;
+end;
+/
+
+Intersection
+declare
+roll integer;
+name varchar2(20);
+cursor mycursor is select roll,name from student intersect select roll,name from student1;
+begin
+open mycursor;
+loop
+fetch mycursor into roll,name;
+exit when mycursor%notfound;
+dbms_output.put_line(roll ||' '||name);
+end loop;
+close mycursor;
+end;
+/
+
+Minus
+declare
+roll integer;
+name varchar2(20);
+cursor mycursor is select roll,name from student1 minus select roll,name from student;
+begin
+open mycursor;
+loop
+fetch mycursor into roll,name;
+exit when mycursor%notfound;
+dbms_output.put_line(roll ||' '||name);
+end loop;
+close mycursor;
+end;
+/
+
+declare 
+data info1%rowtype;
+data1 info1%rowtype;
+cursor sample is select roll from info2;
+cursor mycursor(rn integer) is select * from info1 where roll=rn;
+begin
+for data in sample
+loop
+open mycursor(data.roll);
+fetch mycursor into data1;
+dbms_output.put_line(data1.roll||' '||data1.marks);
+close mycursor;
+end loop;
+end;
+************************************************Practical 7***********************************************
+Stored Procedure
+create table marks(roll int,name varchar(10),marks int);
+create table result(roll int,name varchar(10),class varchar(20));
+insert into marks values(1,'Vijay',1200);
+insert into marks values(2,'Vinay',1000);
+insert into marks values(3,'Rohan',925);
+insert into marks values(4,'Tejas',855);
+
+create or replace procedure res(r integer) as
+name varchar2(20);
+marks integer;
+class varchar2(20);
+begin
+select name,marks into name,marks from marks where roll=r;
+if(marks>=990 and marks<1500) then
+class:='Distinction';
+elsif(marks>=900 and marks<989) then
+class:='First Class';
+elsif(marks>=825 and marks<899) then
+class:='Higher Second Class';
+end if;
+dbms_output.put_line(class);
+insert into result values(r,name,class);
+end;
+
+###################################################################Practical 8###############################################################
+
+create or replace trigger test before delete or update on pr1 for each row
+begin 
+insert into pr2 values(:OLD.name,:OLD.rollno,:OLD.marks);
+end;
+
+##################################################################PRactcial 9#################################################################
+
+>use mydb;
+>db.createCollection("student");
+>> db.student.insertMany({"Roll":1,"Name":"Vijay","Branch":"Computer","Marks":88});
+> db.student.insert({"Roll":3,"Name":"Vinay","Branch":"Computer","Marks":75});
+
+> db.student.find().pretty();
+> db.student.find({"Marks":{$lte:75}}).pretty();
+> db.student.find({"Roll":1}).pretty();
+> db.student.find({"Marks":{$lt:75}}).pretty();
+> db.student.find({"Marks":{$gte:75}}).pretty();
+> db.student.find({"Marks":{$gt:75}}).pretty();
+
+> db.student.update({Roll:3},{$set:{"Name":"Rohan"}});
+
+> db.student.remove({"Roll":5});
+> db.student.remove({"Marks":{$lte:62}});
+
+###################################################################Practical 10################################################################
+
+> db.student.save({_id:ObjectId("5dad2ebf4bd879ab2b21887b"),"Branch":"Electrical"});
+> db.student.find({$and:[{"Name":"Aniket"},{"Branch":"Electrical"}]}).pretty();
+> db.student.find({$or:[{"Name":"Aniket"},{"Branch":"Mechanical"}]});
+> db.student.find({"Marks":{$gt:60}},{$or:[{"Branch":"Mechanical"},{"Roll":2}]}).pretty();
+
+##################################################################Practical 11################################################################
+
+> db.student.aggregate([{$group:{_id:"$Branch",num_student:{$sum:1}}}]);
+> db.student.aggregate([{$group:{_id:"$Branch",sum:{$sum:"$Marks"}}}]);
+> db.student.aggregate([{$group:{_id:"$Branch",average:{$avg:"$Marks"}}}]);
+> db.student.aggregate([{$group:{_id:"$Name",No:{$sum:1}}}]);
+> db.student.aggregate([{$group:{_id:"$Branch",sum:{$sum:"$Marks"},Min:{$min:"$Marks"},max:{$max:"$Marks"},average:$avg:"$Marks"}}}]).pretty();
+
+###################################################################Practical 12################################################################
+
+> db.student.mapReduce(
+... function(){emit(this.Branch,this.Marks);},
+... function(key,values){return Array.sum(values)},
+... {
+... query:{$or:[{"Branch":"Computer"},{"Branch":"Mechanical"}]},
+... out:"output"
+... }
+... )
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
